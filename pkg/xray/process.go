@@ -61,13 +61,13 @@ func GetAccessPersistentLogPath() string {
 func (p *Process) GetAccessLogPath() string {
 	config, err := os.ReadFile(GetConfigPath())
 	if err != nil {
-		p.logger.Error("Something went wrong", err)
+		p.logger.Error(err, "Something went wrong")
 	}
 
 	jsonConfig := map[string]interface{}{}
 	err = json.Unmarshal([]byte(config), &jsonConfig)
 	if err != nil {
-		p.logger.Error("Something went wrong", err)
+		p.logger.Error(err, "Something went wrong")
 	}
 
 	if jsonConfig["log"] != nil {
@@ -91,8 +91,8 @@ type Process struct {
 	*process
 }
 
-func NewProcess(xrayConfig *Config) *Process {
-	p := &Process{newProcess(xrayConfig)}
+func NewProcess(xrayConfig *Config, logger logr.Logger) *Process {
+	p := &Process{logger, newProcess(xrayConfig)}
 	runtime.SetFinalizer(p, stopProcess)
 	return p
 }
